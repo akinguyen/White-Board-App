@@ -1,0 +1,66 @@
+_pickImage = async () => {
+    let result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.All,
+      allowsEditing: true,
+      aspect: [4, 3],
+      quality: 1,
+      base64: true
+    });
+
+    if (!result.cancelled) {
+      this.setState({ image: result.uri });
+
+      axios
+        .post("https://hack-interview-api.herokuapp.com/api/upload", {
+          data: result.base64
+        })
+        .then(function(response) {
+          console.log(response.data);
+        })
+        .catch(function(error) {
+          console.log(error);
+        });
+    }
+  };
+
+  _takePicture = async () => {
+    let result = await ImagePicker.launchCameraAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.All,
+      allowsEditing: true,
+      aspect: [4, 3],
+      quality: 1,
+      base64: true
+    });
+    if (!result.cancelled) {
+      this.setState({ image: result.uri });
+
+      axios
+        .post("https://hack-interview-api.herokuapp.com/api/upload", {
+          data: result.base64
+        })
+        .then(function(response) {
+          console.log(response.data);
+        })
+        .catch(function(error) {
+          console.log(error);
+        });
+    }
+  };
+
+  // output
+  getOutput = async () => {
+    var output = this.state.myoutput - 1;
+
+    if (this.state.image != null) {
+      try {
+        this.setState({ compiling: true });
+        let response = await axios.get(
+          "https://hack-interview-api.herokuapp.com/api/" + this.state.language
+        );
+
+        this.setState({ myoutput: response.data.msg, compiling: false });
+      } catch (error) {
+        this.setState({ myoutput: "Compilation Error or invalid image" });
+      }
+    }
+  };
